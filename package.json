@@ -1,0 +1,19 @@
+{
+  "name": "gatsby-source-zesty",
+  "version": "0.0.1",
+  "description": "Source plugin to get Zesty.io data in Gatsby sites",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/cli": "^7.4.3",
+    "@babel/core": "^7.4.3",
+    "babel-preset-gatsby-package": "^0.1.4",
+    "cross-env": "^5.2.0"
+  },
+  "peerDependencies": {
+    "gatsby": "^2.0.0"
+  },
+  "dependencies": {
+    "zestyio-api-wrapper": "^0.1.15"
+  }
+}
