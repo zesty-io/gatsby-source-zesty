@@ -5,6 +5,8 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
+    "build": "babel src --out-dir .",
+    "prepublishOnly": "yarn run build",
     "lint": "node ./node_modules/eslint/bin/eslint ."
   },
   "devDependencies": {
