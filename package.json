@@ -4,16 +4,36 @@
   "description": "Source plugin to get Zesty.io data in Gatsby sites",
   "main": "index.js",
   "license": "MIT",
+  "scripts": {
+    "lint": "node ./node_modules/eslint/bin/eslint ."
+  },
   "devDependencies": {
     "@babel/cli": "^7.4.3",
     "@babel/core": "^7.4.3",
+    "babel-eslint": "~10.0.1",
     "babel-preset-gatsby-package": "^0.1.4",
-    "cross-env": "^5.2.0"
+    "cross-env": "^5.2.0",
+    "eslint": "~5.15.1",
+    "eslint-config-airbnb": "~17.1.0",
+    "eslint-config-prettier": "~4.1.0",
+    "eslint-plugin-import": "~2.16.0",
+    "eslint-plugin-jsx-a11y": "~6.2.1",
+    "eslint-plugin-prettier": "~3.0.1",
+    "eslint-plugin-react": "~7.12.4",
+    "husky": "~1.3.1",
+    "prettier": "~1.16.4",
+    "pretty-quick": "~1.10.0"
   },
   "peerDependencies": {
     "gatsby": "^2.0.0"
   },
   "dependencies": {
     "zestyio-api-wrapper": "^0.1.15"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "npm run lint",
+      "pre-commit": "pretty-quick --staged"
+    }
   }
 }
