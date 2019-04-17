@@ -30,7 +30,7 @@
     "gatsby": "^2.0.0"
   },
   "dependencies": {
-    "zestyio-api-wrapper": "^0.1.15"
+    "@zesty-io/sdk": "^0.0.7"
   },
   "husky": {
     "hooks": {

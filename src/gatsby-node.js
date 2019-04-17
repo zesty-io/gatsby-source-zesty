@@ -1,6 +1,4 @@
-import getToken from './util/getToken';
-
-const Zesty = require('zestyio-api-wrapper');
+const SDK = require('@zesty-io/sdk');
 
 exports.sourceNodes = async (
   { actions, createNodeId, createContentDigest },
@@ -20,21 +18,27 @@ exports.sourceNodes = async (
       },
     };
   };
-  // await getToken with user credentials.
-  const token = await getToken(configOptions.userName, configOptions.password);
-  // instantiate a zesty wrapper instance to query the endpoints
-  const zesty = new Zesty(configOptions.instanceZUID, token, {
-    logErrors: true,
-    logResponses: false,
-  });
+
+  // authenticate session
+  async function authedSDK() {
+    const auth = new SDK.Auth();
+    const session = await auth.login(
+      configOptions.userName,
+      configOptions.password
+    );
+    return new SDK(configOptions.instanceZUID, session.token);
+  }
+
+  const zesty = await authedSDK();
+
   // options for getting content, models, media --no version support (only published?)
-  // TODO default to get all items unless user specifies an item/media
   if (!configOptions.models && !configOptions.items) {
-    zesty.getModels().then(models => {
-      // potentially filter some models out
-      // for each model fetch all items, generate node type by model's name
+    // by default all models and items are fetched
+    zesty.instance.getModels().then(modelRes => {
+      const models = modelRes.data;
       models.map(model => {
-        return zesty.getItems(model.ZUID).then(items => {
+        return zesty.instance.getItems(model.ZUID).then(itemRes => {
+          const items = itemRes.data;
           items.map(item => {
             return createNode(handleGenerateNodes(item, model.label)); // TODO: label?
           });
