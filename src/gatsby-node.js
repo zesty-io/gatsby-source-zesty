@@ -9,19 +9,19 @@ exports.sourceNodes = async (
 
   if (!email || !password || !instanceZUID) {
     console.error(
-      '\n Email, Password, and instance ZUID are required for Zesty.io source plugin'
+      'Email, Password, and Instance ZUID are required for Zesty.io source plugin'
     );
     return;
   }
 
-  const handleGenerateNodes = (node, ZUID) => {
+  const handleGenerateNodes = (node, name, ZUID) => {
     return {
       ...node,
       id: createNodeId(ZUID),
       parent: null,
       children: [],
       internal: {
-        type: 'ZestyContent',
+        type: name.replace(/-|__|:|\.|\s/g, `_`),
         content: JSON.stringify(node),
         contentDigest: createContentDigest(node),
       },
@@ -45,7 +45,15 @@ exports.sourceNodes = async (
   );
 
   // eslint-disable-next-line consistent-return
-  return contentModelItems.map(items =>
-    items.map(item => createNode(handleGenerateNodes(item, item.meta.ZUID)))
+  return contentModelItems.map((items, i) =>
+    items.map(item =>
+      createNode(
+        handleGenerateNodes(
+          item,
+          contentModels[i].label || 'ZestyContent',
+          item.meta.ZUID
+        )
+      )
+    )
   );
 };
