@@ -5,23 +5,23 @@ exports.sourceNodes = async (
   configOptions
 ) => {
   const { createNode } = actions;
-  const { userName, password, instanceZUID } = configOptions;
+  const { email, password, instanceZUID } = configOptions;
 
-  if (!userName || !password || !instanceZUID) {
+  if (!email || !password || !instanceZUID) {
     console.error(
-      'Username, Password, and instance ZUID are required for Zesty.io source plugin'
+      '\n Email, Password, and instance ZUID are required for Zesty.io source plugin'
     );
     return;
   }
 
-  const handleGenerateNodes = (node, name, ZUID) => {
+  const handleGenerateNodes = (node, ZUID) => {
     return {
       ...node,
       id: createNodeId(ZUID),
       parent: null,
       children: [],
       internal: {
-        type: name,
+        type: 'ZestyContent',
         content: JSON.stringify(node),
         contentDigest: createContentDigest(node),
       },
@@ -29,57 +29,23 @@ exports.sourceNodes = async (
   };
 
   // authenticate session
-  async function authedSDK() {
-    const auth = new SDK.Auth();
-    const session = await auth.login(userName, password);
-    return new SDK(instanceZUID, session.token);
-  }
+  const auth = new SDK.Auth();
+  const session = await auth.login(email, password);
+  console.log('\n Authenticating Zesty instance');
+  const zesty = new SDK(instanceZUID, session.token);
 
-  const zesty = await authedSDK();
-
-  const { models, items } = configOptions;
+  console.log('\n Fetching Zesty data');
   // by default all models and items are fetched
-  if (!models && !items) {
-    zesty.instance.getModels().then(modelRes => {
-      const contentModels = modelRes.data;
-      contentModels.map(model => {
-        return zesty.instance.getItems(model.ZUID).then(itemRes => {
-          const contentModelItems = itemRes.data;
-          contentModelItems.map(item => {
-            return createNode(
-              handleGenerateNodes(item, model.label, item.meta.ZUID)
-            );
-          });
-        });
-      });
-    });
-  } else {
-    // the user has specified models/items to fetch
-    if (models) {
-      models.map(model => {
-        return zesty.instance.getItems(model.ZUID).then(itemRes => {
-          const userModelItems = itemRes.data;
-          userModelItems.map(item => {
-            return createNode(
-              handleGenerateNodes(item, model.label, item.meta.ZUID)
-            );
-          });
-        });
-      });
-    }
-    if (items) {
-      items.map(item => {
-        return zesty.instance.getItem(item).then(res => {
-          const userItem = res.data;
-          return createNode(
-            handleGenerateNodes(
-              userItem,
-              userItem.web.metaTitle,
-              userItem.meta.ZUID
-            )
-          );
-        });
-      });
-    }
-  }
+  const modelRes = await zesty.instance.getModels();
+  const contentModels = modelRes.data;
+  const contentModelItems = await Promise.all(
+    contentModels.map(model =>
+      zesty.instance.getItems(model.ZUID).then(itemRes => itemRes.data)
+    )
+  );
+
+  // eslint-disable-next-line consistent-return
+  return contentModelItems.map(items =>
+    items.map(item => createNode(handleGenerateNodes(item, item.meta.ZUID)))
+  );
 };
