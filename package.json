@@ -9,6 +9,16 @@
     "prepublishOnly": "yarn run build",
     "lint": "node ./node_modules/eslint/bin/eslint ."
   },
+  "keywords": [
+    "gatsby",
+    "gatsby-plugin",
+    "gatsby-source-zesty",
+    "plugin",
+    "source",
+    "zesty",
+    "api",
+    "cms"
+  ],
   "devDependencies": {
     "@babel/cli": "^7.4.3",
     "@babel/core": "^7.4.3",
