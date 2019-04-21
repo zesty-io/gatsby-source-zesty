@@ -28,7 +28,6 @@ exports.sourceNodes = async (
     };
   };
 
-  // authenticate session
   const auth = new SDK.Auth();
   const session = await auth.login(email, password);
   console.log('\n Authenticating Zesty instance');

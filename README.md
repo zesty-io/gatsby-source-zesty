@@ -26,6 +26,8 @@ module.exports = {
 
 ## Configuration options
 
+By default all your Zesty instance content is fetched and will be queryable within Gatsby's GraphQL schema. Optionally individual models can be specified if you only need content from a specific model.
+
 ```
 options: {
 
@@ -40,7 +42,7 @@ options: {
         ModelName: 'modelZUID',
         AnotherModel: 'anotherZUID',
       }
-}
+  }
 ```
 
 If models are specified, the key used will become the 'type' to query in Gatsby.
@@ -49,7 +51,7 @@ If models are specified, the key used will become the 'type' to query in Gatsby.
 
 ```
 {
-  allHomepage {
+  allHomepage { // the label of the model or 'type' in Gatsby's schema
     nodes {
       data {
         image
