@@ -35,9 +35,19 @@ exports.sourceNodes = async (
   const zesty = new SDK(instanceZUID, session.token);
 
   console.log('\n Fetching Zesty data');
-  // by default all models and items are fetched
-  const modelRes = await zesty.instance.getModels();
-  const contentModels = modelRes.data;
+  let contentModels;
+  if (configOptions.models) {
+    contentModels = Object.entries(configOptions.models).reduce(
+      (acc, [label, ZUID]) => {
+        acc.push({ label, ZUID });
+        return acc;
+      },
+      []
+    );
+  } else {
+    const modelRes = await zesty.instance.getModels();
+    contentModels = modelRes.data;
+  }
   const contentModelItems = await Promise.all(
     contentModels.map(model =>
       zesty.instance.getItems(model.ZUID).then(itemRes => itemRes.data)
