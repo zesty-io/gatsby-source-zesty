@@ -57,7 +57,7 @@ All content of a certain type
 {
   allHomepage { // the label of the model or 'type' in Gatsby's schema
     nodes {
-      data { // date is where an item's user content will be accessible
+      data { // data contains user entered content
         image
         title
         content
