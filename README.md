@@ -53,7 +53,7 @@ If models are specified, the key used will become the 'type' to query in Gatsby.
 
 All content of a certain type
 
-```javascript
+```graphql
 {
   allHomepage { // the label of the model or 'type' in Gatsby's schema
     nodes {
@@ -73,7 +73,7 @@ All content of a certain type
 
 Filtering
 
-````javascript
+````graphql
 {
   allHomepage (
     filter: {
