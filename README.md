@@ -73,7 +73,7 @@ All content of a certain type
 
 Filtering
 
-````graphql
+```graphql
 {
   allHomepage (
     filter: {
@@ -93,9 +93,7 @@ Filtering
     }
   }
 }
-
 ```
 
-
 more information on [GraphQL querying](https://www.gatsbyjs.org/docs/graphql-reference/).
-````
+
