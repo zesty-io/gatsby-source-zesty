@@ -17,37 +17,25 @@ module.exports = {
     {
       resolve: 'gatsby-source-zesty',
       options: {
-        ...
-      }
-    }
-  ]
+        url: `https://your-zesty-instance.com/-/gql/`,
+      },
+    },
+    ...
+  ],
 };
 ```
 
 ## Configuration options
 
-By default all your Zesty instance content is fetched and will be queryable within Gatsby's GraphQL schema. Optionally individual models can be specified if you only need content from a specific model.
+Your Zesty.io GraphQL endpoint URL is required.
+To turn this on you can follow these steps:
 
-It is not recommended to put your email and password in plain text in the configuration. For sensitive information use an NPM package called `dotenv`. More details on that at the [dotenv npm page.](https://www.npmjs.com/package/dotenv)
-
-```javascript
-options: {
-
-  // REQUIRED
-  email: 'process.env.your@Email.Address',
-  password: 'process.env.yourPassword',
-  instanceZUID: 'yourInstanceZUID',
-
-  // OPTIONAL
-  // Specific models to fetch.
-  models: {
-        ModelName: 'modelZUID',
-        AnotherModel: 'anotherZUID',
-      }
-  }
-```
-
-If models are specified, the key used will become the 'type' to query in Gatsby.
+- Log into Zesty.io
+- Open the manager interface for the instance you want to access GraphQL
+- In manager, Go to your Schema > settings area
+- Navigate to Developer settings
+- Click GraphQL to turn on
+- Set GraphQL origin to \* (this can later be tied to your remote)
 
 ## How to query
 
@@ -55,17 +43,10 @@ All content of a certain type
 
 ```graphql
 {
-  allHomepage { // the label of the model or 'type' in Gatsby's schema
+  allCategory {
     nodes {
-      data { // data contains user entered content
-        image
-        title
-        content
-      }
-      id
-      meta {
-        sort
-      }
+      category
+      description
     }
   }
 }
@@ -75,15 +56,7 @@ Filtering
 
 ```graphql
 {
-  allHomepage (
-    filter: {
-      data: {
-        title: {
-          eq: "the article I want"
-        }
-      }
-    }
-  ){
+  allHomepage(filter: { data: { title: { eq: "the article I want" } } }) {
     nodes {
       data {
         image
@@ -96,4 +69,3 @@ Filtering
 ```
 
 more information on [GraphQL querying](https://www.gatsbyjs.org/docs/graphql-reference/).
-
