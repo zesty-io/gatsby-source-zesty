@@ -1,17 +1,24 @@
-const SDK = require('@zesty-io/sdk');
+const axios = require(`axios`);
 
 exports.sourceNodes = async (
-  { actions, createNodeId, createContentDigest },
+  { actions, createNodeId, createContentDigest, reporter },
   configOptions
 ) => {
   const { createNode } = actions;
-  const { email, password, instanceZUID } = configOptions;
+  let { url } = configOptions;
 
-  if (!email || !password || !instanceZUID) {
-    console.error(
-      'Email, Password, and Instance ZUID are required for Zesty.io source plugin'
-    );
+  if (!url) {
+    reporter.error(`A URL is required for Zesty.io source plugin`);
     return;
+  }
+  if (!url.endsWith(`/-/gql/`)) {
+    url = `${url}/`;
+
+    // eslint-disable-next-line no-unused-expressions
+    !url.endsWith(`/-/gql/`) &&
+      reporter.warn(
+        `Your Zesty URL should point to the GraphQL endpoint ending with '/-/gql/'`
+      );
   }
 
   const handleGenerateNodes = (node, name, ZUID) => {
@@ -28,40 +35,33 @@ exports.sourceNodes = async (
     };
   };
 
-  const auth = new SDK.Auth();
-  const session = await auth.login(email, password);
-  console.log('\n Authenticating Zesty instance');
-  const zesty = new SDK(instanceZUID, session.token);
+  reporter.info('Fetching Zesty.io data');
 
-  console.log('\n Fetching Zesty data');
-  let contentModels;
-  if (configOptions.models) {
-    contentModels = Object.entries(configOptions.models).reduce(
-      (acc, [label, ZUID]) => {
-        acc.push({ label, ZUID });
-        return acc;
-      },
-      []
+  const { data } = await axios
+    .get(url)
+    .catch(err =>
+      reporter.warn(
+        `There was an issue fetching content models for your Zesty.io instance`,
+        err
+      )
     );
-  } else {
-    const modelRes = await zesty.instance.getModels();
-    contentModels = modelRes.data;
-  }
+
+  const { models } = data;
+
   const contentModelItems = await Promise.all(
-    contentModels.map(model =>
-      zesty.instance.getItems(model.ZUID).then(itemRes => itemRes.data)
+    models.map(item => axios.get(item.gqlUrl).then(res => res.data))
+  ).catch(err =>
+    reporter.warn(
+      `There was an issue processing content for your Zesty.io instance`,
+      err
     )
   );
 
   // eslint-disable-next-line consistent-return
-  return contentModelItems.map((items, i) =>
-    items.map(item =>
+  return contentModelItems.map((contentType, i) =>
+    contentType.map(content =>
       createNode(
-        handleGenerateNodes(
-          item,
-          contentModels[i].label || 'ZestyContent',
-          item.meta.ZUID
-        )
+        handleGenerateNodes(content, models[i].gqlModelName, content.zuid)
       )
     )
   );
