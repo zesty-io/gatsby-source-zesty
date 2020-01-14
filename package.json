@@ -1,6 +1,6 @@
 {
   "name": "gatsby-source-zesty",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Source plugin to get Zesty.io data in Gatsby sites",
   "main": "index.js",
   "license": "MIT",
