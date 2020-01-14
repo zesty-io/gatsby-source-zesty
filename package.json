@@ -1,13 +1,18 @@
 {
   "name": "gatsby-source-zesty",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Source plugin to get Zesty.io data in Gatsby sites",
   "main": "index.js",
   "license": "MIT",
+  "homepage": "https://github.com/zesty-io/gatsby-source-zesty#readme",
   "scripts": {
     "build": "babel src --out-dir .",
     "prepublishOnly": "yarn run build",
     "lint": "node ./node_modules/eslint/bin/eslint . --ignore-path .gitignore"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zesty-io/gatsby-source-zesty"
   },
   "keywords": [
     "gatsby",
